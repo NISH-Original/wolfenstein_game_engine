@@ -18,7 +18,7 @@ void Player::OnUpdate(float ts)
 
 		if (m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] == 2)
 		{
-			m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] == 0;
+			m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] = 0;
 			m_Minigame.PlaceCoin();
 		}
 	}
