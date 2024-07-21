@@ -3,16 +3,15 @@
 #include "Walnut/Image.h"
 
 #include <memory>
-#include <glm/glm.hpp>
 #include "Scene.h"
 #include "Player.h"
 
-class Renderer
+class Minimap
 {
 public:
-	Renderer() = default;
-	
-	void Render(const Scene& scene, Player& player);
+	Minimap() = default;
+
+	void Render();
 
 	void OnResize(uint32_t width, uint32_t height);
 
@@ -20,4 +19,5 @@ public:
 private:
 	std::shared_ptr<Walnut::Image> m_FinalImage;
 	uint32_t* m_ImageData = nullptr;
+	Scene scene;
 };

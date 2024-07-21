@@ -4,6 +4,8 @@
 #include "Walnut/Image.h"
 #include <Walnut/Timer.h>
 #include "Renderer.h"
+#include "Minimap.h"
+#include "glm/gtc/type_ptr.hpp"
 
 using namespace Walnut;
 
@@ -19,6 +21,28 @@ public:
 	{
 		ImGui::Begin("Settings");
 		ImGui::Text("Last Render: %.3fms", m_LastRenderTime);
+
+		ImGui::Separator();
+
+		ImGui::ColorEdit3("Sky Colour", glm::value_ptr(m_Scene.skyColour));
+		ImGui::ColorEdit3("Wall Colour", glm::value_ptr(m_Scene.wallColour));
+		ImGui::ColorEdit3("Floor Colour", glm::value_ptr(m_Scene.floorColour));
+
+		ImGui::Separator();
+
+		ImGui::DragFloat("Walk Speed", &m_Player.m_WalkSpeed, 0.1f, 0.1f, 10.0f);
+		ImGui::DragFloat("Turn Speed", &m_Player.m_TurnSpeed, 0.1f, 0.1f, 5.0f);
+		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
+		ImGui::End();
+
+		ImGui::Begin("Minimap");
+		
+		m_MapWidth = ImGui::GetContentRegionAvail().x;
+		m_MapHeight = ImGui::GetContentRegionAvail().y;
+
+		auto mapImage = m_Minimap.GetFinalImage();
+		if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
+
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -34,6 +58,7 @@ public:
 		ImGui::PopStyleVar();
 
 		Render();
+		RenderMap();
 	}
 
 	void Render()
@@ -46,10 +71,18 @@ public:
 
 		m_LastRenderTime = timer.ElapsedMillis();
 	}
+
+	void RenderMap()
+	{
+		m_Minimap.OnResize(m_MapWidth, m_MapHeight);
+		m_Minimap.Render();
+	}
 private:
 	std::shared_ptr<Image> m_Image;
 	uint32_t m_SceneWidth = 0, m_SceneHeight = 0;
+	uint32_t m_MapWidth = 0, m_MapHeight = 0;
 	Renderer m_Renderer;
+	Minimap m_Minimap;
 	float m_LastRenderTime = 0;
 	Scene m_Scene;
 	Player m_Player;

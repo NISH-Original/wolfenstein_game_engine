@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Walnut/Input/Input.h"
+using namespace std;
 
 using namespace Walnut;
 
@@ -13,6 +14,12 @@ void Player::OnUpdate(float ts)
 		if (m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] == 1)
 		{
 			m_Position -= forwardDir * m_WalkSpeed * ts;
+		}
+
+		if (m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] == 2)
+		{
+			m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] == 0;
+			m_Minigame.PlaceCoin();
 		}
 	}
 	else if (Input::IsKeyDown(KeyCode::S))
