@@ -19,8 +19,9 @@ public:
 	
 	virtual void OnUIRender() override
 	{
-		ImGui::Begin("Settings");
+		ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 		ImGui::Text("FPS: %.3f", 1000.0f / m_LastRenderTime);
+		ImGui::Text("Player Angle: %.3f", m_Player.m_Angle);
 
 		ImGui::Separator();
 
@@ -33,21 +34,22 @@ public:
 		ImGui::DragFloat("Walk Speed", &m_Player.m_WalkSpeed, 0.1f, 0.1f, 10.0f);
 		ImGui::DragFloat("Turn Speed", &m_Player.m_TurnSpeed, 0.1f, 0.1f, 5.0f);
 		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
+		if (ImGui::Button("Render")) m_CanRender = true;
 		ImGui::End();
 
-		// ImGui::Begin("Minimap");
+		ImGui::Begin("Minimap", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 		
-		// m_MapWidth = ImGui::GetContentRegionAvail().x;
-		// m_MapHeight = ImGui::GetContentRegionAvail().y;
+		m_MapWidth = ImGui::GetContentRegionAvail().x;
+		m_MapHeight = ImGui::GetContentRegionAvail().y;
 		// std::cout << m_MapWidth << " :: " << m_MapHeight << std::endl;
 
-		// auto mapImage = m_Minimap.GetFinalImage();
-		// if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
+		auto mapImage = m_Renderer.GetFinalMapImage();
+		if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
 
-		// ImGui::End();
+		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("Scene");
+		ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 		 
 		m_SceneWidth = ImGui::GetContentRegionAvail().x;
 		m_SceneHeight = ImGui::GetContentRegionAvail().y;
@@ -58,26 +60,19 @@ public:
 		ImGui::End();
 		ImGui::PopStyleVar();
 
-		Render();
-		// if (m_MapHeight > 0)
-		// 	RenderMap();
+		if (m_CanRender)
+			Render();
 	}
 
 	void Render()
 	{
 		Timer timer;
 
-		m_Renderer.OnResize(m_SceneWidth, m_SceneHeight);
+		m_Renderer.OnResize(m_SceneWidth, m_SceneHeight, m_MapWidth, m_MapHeight);
 		m_Player.OnResize(m_SceneWidth, m_SceneHeight);
 		m_Renderer.Render(m_Scene, m_Player);
 
 		m_LastRenderTime = timer.ElapsedMillis();
-	}
-
-	void RenderMap()
-	{
-		m_Minimap.OnResize(m_MapWidth, m_MapHeight);
-		m_Minimap.Render();
 	}
 private:
 	std::shared_ptr<Image> m_Image;
@@ -88,6 +83,7 @@ private:
 	float m_LastRenderTime = 0;
 	Scene m_Scene;
 	Player m_Player;
+	bool m_CanRender = false;
 };
 
 Walnut::Application* Walnut::CreateApplication(int argc, char** argv)

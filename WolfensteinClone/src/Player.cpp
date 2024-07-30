@@ -32,7 +32,7 @@ void Player::OnUpdate(float ts)
 			m_Position += forwardDir * m_WalkSpeed * ts;
 		}
 	}
-	else if (Input::IsKeyDown(KeyCode::A))
+	else if (Input::IsKeyDown(KeyCode::D))
 	{
 		glm::vec2 forwardDir = { -cosf(m_Angle), sinf(m_Angle) };
 		m_Position += forwardDir * m_WalkSpeed * ts;
@@ -42,7 +42,7 @@ void Player::OnUpdate(float ts)
 			m_Position -= forwardDir * m_WalkSpeed * ts;
 		}
 	}
-	else if (Input::IsKeyDown(KeyCode::D))
+	else if (Input::IsKeyDown(KeyCode::A))
 	{
 		glm::vec2 forwardDir = { cosf(m_Angle), -sinf(m_Angle) };
 		m_Position += forwardDir * m_WalkSpeed * ts;
@@ -52,11 +52,11 @@ void Player::OnUpdate(float ts)
 			m_Position -= forwardDir * m_WalkSpeed * ts;
 		}
 	}
-	else if (Input::IsKeyDown(KeyCode::Right))
+	else if (Input::IsKeyDown(KeyCode::Left))
 	{
 		m_Angle += m_TurnSpeed * ts;
 	}
-	else if (Input::IsKeyDown(KeyCode::Left))
+	else if (Input::IsKeyDown(KeyCode::Right))
 	{
 		m_Angle -= m_TurnSpeed * ts;
 	}

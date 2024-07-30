@@ -11,7 +11,7 @@ public:
 	void OnResize(uint32_t width, uint32_t height);
 
 	float m_MaxViewDist = 16.0f;
-	float m_Angle = 0.0f;
+	float m_Angle = -3.0f;
 	int m_Fov = 45;
 	glm::vec2 m_Position = { 8, 8 };
 	bool m_HitWall = false;

@@ -17,7 +17,7 @@ namespace Utils
 	}
 }
 
-void Renderer::OnResize(uint32_t width, uint32_t height)
+void Renderer::OnResize(uint32_t width, uint32_t height, uint32_t mapWidth, uint32_t mapHeight)
 {
 	if (m_FinalImage)
 	{
@@ -33,6 +33,21 @@ void Renderer::OnResize(uint32_t width, uint32_t height)
 
 	delete[] m_ImageData;
 	m_ImageData = new uint32_t[width * height];
+
+	if (m_FinalMapImage)
+	{
+		if (m_FinalMapImage->GetWidth() == mapWidth && m_FinalImage->GetHeight() == mapHeight)
+			return;
+
+		m_FinalImage->Resize(mapWidth, mapHeight);
+	}
+	else
+	{
+		m_FinalMapImage = std::make_shared<Walnut::Image>(mapWidth, mapHeight, Walnut::ImageFormat::RGBA);
+	}
+
+	delete[] m_MapImageData;
+	m_MapImageData = new uint32_t[mapWidth * mapHeight];
 }
 
 void Renderer::Render(const Scene& scene, Player& player)
@@ -40,7 +55,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 	for (uint32_t x = 0; x < m_FinalImage->GetWidth(); x++)
 	{
 		float fov = player.m_Fov * (PI / 180);
-		float rayAngle = (player.m_Angle - (fov / 2.0f)) + ((float)x / (float)m_FinalImage->GetWidth()) * fov;
+		float rayAngle = (player.m_Angle + (fov / 2.0f)) - ((float)x / (float)m_FinalImage->GetWidth()) * fov;
 		// rayAngle *= ((float)m_FinalImage->GetWidth() / m_FinalImage->GetHeight());
 		float rayDist = 0.0f;
 		float coinDist = 0.0f;
@@ -52,17 +67,11 @@ void Renderer::Render(const Scene& scene, Player& player)
 		while (!hitWall && rayDist < player.m_MaxViewDist)
 		{
 			rayDist += 0.1f;
-			// if (!hitCoin) coinDist += 0.1f;
 
 			glm::vec2 test = {
 				(int)(player.m_Position.x + unitVector.x * rayDist),
 				(int)(player.m_Position.y + unitVector.y * rayDist)
 			};
-
-			// glm::vec2 testCoin = {
-			// 	(int)(player.m_Position.x + unitVector.x * coinDist),
-			// 	(int)(player.m_Position.y + unitVector.y * coinDist)
-			// };
 
 			// if ray out of bounds
 			if (test.x < 0 || test.x >= scene.mapWidth || test.y < 0 || test.y >= scene.mapHeight)
@@ -72,15 +81,6 @@ void Renderer::Render(const Scene& scene, Player& player)
 			}
 			else
 			{
-				/*
-				bool canSeeCoin = ((player.m_Angle - (fov / 8.0f)) <= rayAngle) && (rayAngle <= ((player.m_Angle - (fov / 4.0f)) + (fov / 4.0f)));
-
-				if (scene.map[(int)(testCoin.x + scene.mapWidth * testCoin.y)] == 2 && canSeeCoin)
-				{
-					hitCoin = true;
-				}
-				*/
-				
 				if (scene.map[(int)(test.x + scene.mapWidth * test.y)] != 0)
 				{
 					if (scene.map[(int)(test.x + scene.mapWidth * test.y)] == 2)
@@ -111,4 +111,58 @@ void Renderer::Render(const Scene& scene, Player& player)
 	}
 
 	m_FinalImage->SetData(m_ImageData);
+
+	int blockWidth = m_FinalMapImage->GetWidth() / scene.mapWidth;
+	int blockHeight = m_FinalMapImage->GetHeight() / scene.mapHeight;
+	int sceneX = 0;
+	int sceneY = 0;
+
+#if 0
+	for (uint32_t x = 0; x < m_FinalMapImage->GetWidth(); x++)
+	{
+		for (uint32_t y = 0; y < m_FinalMapImage->GetHeight(); y++)
+		{
+			m_MapImageData[x + y * m_FinalMapImage->GetWidth()] = 0xffffffff;
+		}
+	}
+#else
+	for (int x = 0; x < scene.mapWidth; x++)
+	{
+		for (int y = 0; y < scene.mapHeight; y++)
+		{
+			int offsetX = x * blockWidth;
+			int offsetY = y * blockHeight;
+
+			glm::vec4 shade = scene.map[x + y * scene.mapWidth] == 1 ? scene.wallColour : scene.floorColour;
+
+			for (int i = offsetX; i < offsetX + blockWidth; i++)
+			{
+				for (int j = offsetY; j < offsetY + blockHeight; j++)
+				{
+					m_MapImageData[i + j * m_FinalMapImage->GetWidth()] = Utils::ConvertToRGBA(shade);
+				}
+			}
+		}
+	}
+
+	int playerX = player.m_Position.x;
+	int playerY = player.m_Position.y;
+
+	for (int x = playerX * blockWidth; x < playerX * blockWidth + blockWidth; x++)
+	{
+		for (int y = playerY * blockHeight; y < playerY * blockHeight + blockHeight; y++)
+		{
+			m_MapImageData[x + y * m_FinalMapImage->GetWidth()] = Utils::ConvertToRGBA(
+				glm::vec4(
+					1.0f - scene.floorColour.x,
+					1.0f - scene.floorColour.y, 
+					1.0f - scene.floorColour.z, 
+					scene.floorColour.w
+				));
+		}
+	}
+#endif
+
+	m_FinalMapImage->SetData(m_MapImageData);
 }
+
