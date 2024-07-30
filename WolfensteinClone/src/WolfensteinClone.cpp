@@ -50,7 +50,7 @@ public:
 		ImGui::Begin("Scene");
 		 
 		m_SceneWidth = ImGui::GetContentRegionAvail().x;
-		m_SceneHeight = ImGui::GetContentRegionAvail().y;
+		m_SceneHeight = ImG#include <iostream>ui::GetContentRegionAvail().y;
 
 		auto image = m_Renderer.GetFinalImage();
 		if (image) ImGui::Image(image->GetDescriptorSet(), { (float)image->GetWidth(), (float)image->GetHeight() });
@@ -59,7 +59,8 @@ public:
 		ImGui::PopStyleVar();
 
 		Render();
-		// RenderMap();
+		if (m_MapHeight > 0)
+			RenderMap();
 	}
 
 	void Render()

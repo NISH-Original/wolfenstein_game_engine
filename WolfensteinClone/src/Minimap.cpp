@@ -1,5 +1,6 @@
-#include "Minimap.h"
 #include <iostream>
+
+#include "Minimap.h"
 
 using namespace std;
 
@@ -32,18 +33,18 @@ void Minimap::OnResize(uint32_t width, uint32_t height)
 
 	delete[] m_ImageData;
 	m_ImageData = new uint32_t[width * height];
-	cout << width << " : " << height << endl;
+	// std::cout << width << " : " << height << std::endl;
 }
 
 void Minimap::Render()
 {
-	cout << m_FinalImage->GetWidth() << " : " << m_FinalImage->GetHeight() << endl;
-	cout << m_FinalImage->GetWidth() * m_FinalImage->GetHeight() << endl;
+	std::cout << m_FinalImage->GetWidth() << " : " << m_FinalImage->GetHeight() << std::endl;
+	std::cout << m_FinalImage->GetWidth() * m_FinalImage->GetHeight() << std::endl;
 	
 	for (uint32_t i = 0; i < m_FinalImage->GetWidth() * m_FinalImage->GetHeight(); i++)
 	{
 		m_ImageData[i] = 0xffffffff;
-		cout << i << endl;
+		std::cout << i << std::endl;
 	}
 	
 	/*
