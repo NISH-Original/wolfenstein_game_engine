@@ -1,4 +1,7 @@
 #include "Minimap.h"
+#include <iostream>
+
+using namespace std;
 
 namespace Utils
 {
@@ -29,28 +32,43 @@ void Minimap::OnResize(uint32_t width, uint32_t height)
 
 	delete[] m_ImageData;
 	m_ImageData = new uint32_t[width * height];
+	cout << width << " : " << height << endl;
 }
 
 void Minimap::Render()
 {
+	cout << m_FinalImage->GetWidth() << " : " << m_FinalImage->GetHeight() << endl;
+	cout << m_FinalImage->GetWidth() * m_FinalImage->GetHeight() << endl;
+	
+	for (uint32_t i = 0; i < m_FinalImage->GetWidth() * m_FinalImage->GetHeight(); i++)
+	{
+		m_ImageData[i] = 0xffffffff;
+		cout << i << endl;
+	}
+	
+	/*
+	int blockWidth = m_FinalImage->GetWidth() / scene.mapWidth;
+	int blockHeight = m_FinalImage->GetHeight() / scene.mapHeight;
+	
 	for (int x = 0; x < scene.mapWidth; x++)
 	{
 		for (int y = 0; y < scene.mapHeight; y++)
 		{
-			int offsetX = x * m_FinalImage->GetWidth() / scene.mapWidth;
-			int offsetY = y * m_FinalImage->GetHeight() / scene.mapHeight;
+			int offsetX = x * blockWidth;
+			int offsetY = y * blockHeight;
 
-			glm::vec4 shade = scene.map[x + y * scene.mapWidth] == 1 ? glm::vec4(1, 1, 0, 1) : glm::vec4{0, 0, 0, 1};
+			glm::vec4 shade = scene.map[x + y * scene.mapWidth] == 1 ? glm::vec4(1, 1, 0, 1) : glm::vec4(0, 0, 0, 1);
 
-			for (int i = 0; i < m_FinalImage->GetWidth() / scene.mapWidth; i++)
+			for (int i = offsetX; i < offsetX + blockWidth; i++)
 			{
-				for (int j = 0; j < m_FinalImage->GetHeight() / scene.mapHeight; j++)
+				for (int j = offsetY; j < offsetY + blockHeight; j++)
 				{
 					m_ImageData[i + j * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(shade);
 				}
 			}
 		}
 	}
+	*/
 
-	// m_FinalImage->SetData(m_ImageData);
+	m_FinalImage->SetData(m_ImageData);
 }

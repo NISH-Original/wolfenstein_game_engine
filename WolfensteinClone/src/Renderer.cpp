@@ -108,60 +108,6 @@ void Renderer::Render(const Scene& scene, Player& player)
 				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.floorColour * floorDist);
 			}
 		}
-
-		/*
-			if (hitCoin)
-			{
-				int coinCeiling = max(((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)coinDist)), 0.0f);
-				int coinFloor = m_FinalImage->GetHeight() - coinCeiling;
-
-				if (y > coinCeiling && y <= coinFloor)
-				{
-					glm::vec4 shade = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-					m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(shade);
-				}
-			}
-			*/
-
-		/*
-		while (!hitCoin && coinDist < player.m_MaxViewDist)
-		{
-			coinDist += 0.1f;
-
-			glm::vec2 test = {
-				(int)(player.m_Position.x + unitVector.x * coinDist),
-				(int)(player.m_Position.y + unitVector.y * coinDist)
-			};
-
-			// if ray out of bounds
-			if (test.x < 0 || test.x >= scene.mapWidth || test.y < 0 || test.y >= scene.mapHeight)
-			{
-				hitCoin = true;
-				rayDist = player.m_MaxViewDist;
-			}
-			else
-			{
-				bool canSeeCoin = (player.m_Angle - (fov / 4.0f)) <= rayAngle <= ((player.m_Angle - (fov / 4.0f)) + (fov / 2.0f));
-
-				if (scene.map[(int)(test.x + scene.mapWidth * test.y)] == 2 && canSeeCoin)
-				{
-					hitCoin = true;
-				}
-			}
-		}
-
-		int coinCeiling = max(2 * ((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)coinDist)), 0.0f);
-		int coinFloor = m_FinalImage->GetHeight() - coinCeiling;
-
-		for (uint32_t y = 0; y < m_FinalImage->GetHeight(); y++)
-		{
-			if (y > coinCeiling && y <= coinFloor)
-			{
-				glm::vec4 shade = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(shade);
-			}
-		}
-		*/
 	}
 
 	m_FinalImage->SetData(m_ImageData);

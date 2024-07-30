@@ -21,3 +21,4 @@ private:
 	uint32_t* m_ImageData = nullptr;
 	Scene scene;
 };
+

@@ -39,6 +39,7 @@ public:
 		
 		m_MapWidth = ImGui::GetContentRegionAvail().x;
 		m_MapHeight = ImGui::GetContentRegionAvail().y;
+		std::cout << m_MapWidth << " :: " << m_MapHeight << std::endl;
 
 		auto mapImage = m_Minimap.GetFinalImage();
 		if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
@@ -58,7 +59,7 @@ public:
 		ImGui::PopStyleVar();
 
 		Render();
-		RenderMap();
+		// RenderMap();
 	}
 
 	void Render()
