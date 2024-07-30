@@ -20,7 +20,7 @@ public:
 	virtual void OnUIRender() override
 	{
 		ImGui::Begin("Settings");
-		ImGui::Text("Last Render: %.3fms", m_LastRenderTime);
+		ImGui::Text("FPS: %.3f", 1000.0f / m_LastRenderTime);
 
 		ImGui::Separator();
 
@@ -35,22 +35,22 @@ public:
 		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
 		ImGui::End();
 
-		ImGui::Begin("Minimap");
+		// ImGui::Begin("Minimap");
 		
-		m_MapWidth = ImGui::GetContentRegionAvail().x;
-		m_MapHeight = ImGui::GetContentRegionAvail().y;
-		std::cout << m_MapWidth << " :: " << m_MapHeight << std::endl;
+		// m_MapWidth = ImGui::GetContentRegionAvail().x;
+		// m_MapHeight = ImGui::GetContentRegionAvail().y;
+		// std::cout << m_MapWidth << " :: " << m_MapHeight << std::endl;
 
-		auto mapImage = m_Minimap.GetFinalImage();
-		if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
+		// auto mapImage = m_Minimap.GetFinalImage();
+		// if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
 
-		ImGui::End();
+		// ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene");
 		 
 		m_SceneWidth = ImGui::GetContentRegionAvail().x;
-		m_SceneHeight = ImG#include <iostream>ui::GetContentRegionAvail().y;
+		m_SceneHeight = ImGui::GetContentRegionAvail().y;
 
 		auto image = m_Renderer.GetFinalImage();
 		if (image) ImGui::Image(image->GetDescriptorSet(), { (float)image->GetWidth(), (float)image->GetHeight() });
@@ -59,8 +59,8 @@ public:
 		ImGui::PopStyleVar();
 
 		Render();
-		if (m_MapHeight > 0)
-			RenderMap();
+		// if (m_MapHeight > 0)
+		// 	RenderMap();
 	}
 
 	void Render()
