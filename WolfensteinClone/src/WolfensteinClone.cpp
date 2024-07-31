@@ -49,6 +49,7 @@ public:
 		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
 		ImGui::End();
 
+		// minimap
 		ImGui::Begin("Minimap", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 		
 		m_MapWidth = ImGui::GetContentRegionAvail().x;
