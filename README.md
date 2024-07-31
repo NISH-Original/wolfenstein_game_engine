@@ -1,6 +1,10 @@
-# Walnut App Template
+# Wolfenstein-Style 3D Game Engine
 
-This is a simple app template for [Walnut](https://github.com/TheCherno/Walnut) - unlike the example within the Walnut repository, this keeps Walnut as an external submodule and is much more sensible for actually building applications. See the [Walnut](https://github.com/TheCherno/Walnut) repository for more details.
+This is a basic 3D game engine inpired by the original 'Wolfenstein 3D' game. It uses rasterization with raycasting to produce a 3D-looking scene on a two-dimensional screen. 
 
-## Getting Started
-Once you've cloned, you can customize the `premake5.lua` and `WalnutApp/premake5.lua` files to your liking (eg. change the name from "WalnutApp" to something else).  Once you're happy, run `scripts/Setup.bat` to generate Visual Studio 2022 solution/project files. Your app is located in the `WalnutApp/` directory, which some basic example code to get you going in `WalnutApp/src/WalnutApp.cpp`. I recommend modifying that WalnutApp project to create your own application, as everything should be setup and ready to go.
+## Features
+- Raycasting: Rendering a 3D environment using 2D grid-based maps.
+- Basic Lighting: Walls that are further away get darker to get a better feel for the 3D perspective.
+- Simple Collision Detection
+- Scene and Player Customization: Ability to change colours of the various elements in the scene along with customizing player speed.
+- Mini-map: A mini-map to better help with navigation.
