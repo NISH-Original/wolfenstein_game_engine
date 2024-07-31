@@ -8,3 +8,6 @@ This is a basic 3D game engine inpired by the original 'Wolfenstein 3D' game. It
 - Simple Collision Detection
 - Scene and Player Customization: Ability to change colours of the various elements in the scene along with customizing player speed.
 - Mini-map: A mini-map to better help with navigation.
+
+### Note:
+- The actual project scripts are stored in `WolfensteinClone/src`.
