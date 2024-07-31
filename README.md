@@ -1,6 +1,6 @@
 # Wolfenstein-Style 3D Game Engine
 
-This is a basic 3D game engine inpired by the original 'Wolfenstein 3D' game. It uses rasterization with raycasting to produce a 3D-looking scene on a two-dimensional screen. 
+This is a basic 3D game engine built from scratch, inpired by the original 'Wolfenstein 3D' game. It uses rasterization with raycasting to produce a 3D-looking scene on a two-dimensional screen. It is CPU-based and does not leverage OpenGL, rather manually calculates and assigns values to the pixel buffer with math.
 
 ## Features
 - Raycasting: Rendering a 3D environment using 2D grid-based maps.
