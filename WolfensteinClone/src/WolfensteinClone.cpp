@@ -4,10 +4,19 @@
 #include "Walnut/Image.h"
 #include <Walnut/Timer.h>
 #include "Renderer.h"
-#include "Minimap.h"
 #include "glm/gtc/type_ptr.hpp"
 
 using namespace Walnut;
+
+namespace Utils
+{
+	int roundToTen(float num)
+	{
+		int a = (num / 10) * 10;
+		int b = a + 10;
+		return (num - a >= b - num) ? b : a;
+	}
+}
 
 class ExampleLayer : public Walnut::Layer
 {
@@ -19,9 +28,13 @@ public:
 	
 	virtual void OnUIRender() override
 	{
+		// HUD elements
 		ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-		ImGui::Text("FPS: %.3f", 1000.0f / m_LastRenderTime);
-		ImGui::Text("Player Angle: %.3f", m_Player.m_Angle);
+		if (ImGui::Button("START")) m_CanRender = true;
+
+		ImGui::Separator();
+
+		ImGui::Text("FPS: %.3i", Utils::roundToTen(1000.0f / m_LastRenderTime));
 
 		ImGui::Separator();
 
@@ -34,14 +47,12 @@ public:
 		ImGui::DragFloat("Walk Speed", &m_Player.m_WalkSpeed, 0.1f, 0.1f, 10.0f);
 		ImGui::DragFloat("Turn Speed", &m_Player.m_TurnSpeed, 0.1f, 0.1f, 5.0f);
 		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
-		if (ImGui::Button("Render")) m_CanRender = true;
 		ImGui::End();
 
 		ImGui::Begin("Minimap", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 		
 		m_MapWidth = ImGui::GetContentRegionAvail().x;
 		m_MapHeight = ImGui::GetContentRegionAvail().y;
-		// std::cout << m_MapWidth << " :: " << m_MapHeight << std::endl;
 
 		auto mapImage = m_Renderer.GetFinalMapImage();
 		if (mapImage) ImGui::Image(mapImage->GetDescriptorSet(), { (float)mapImage->GetWidth(), (float)mapImage->GetHeight() });
@@ -61,10 +72,10 @@ public:
 		ImGui::PopStyleVar();
 
 		if (m_CanRender)
-			Render();
+			StartGame();
 	}
 
-	void Render()
+	void StartGame()
 	{
 		Timer timer;
 
@@ -79,7 +90,6 @@ private:
 	uint32_t m_SceneWidth = 0, m_SceneHeight = 0;
 	uint32_t m_MapWidth = 0, m_MapHeight = 0;
 	Renderer m_Renderer;
-	Minimap m_Minimap;
 	float m_LastRenderTime = 0;
 	Scene m_Scene;
 	Player m_Player;

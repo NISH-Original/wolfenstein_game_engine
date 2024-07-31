@@ -2,7 +2,6 @@
 
 #include <glm/glm.hpp>
 #include "Scene.h"
-#include "Minigame.h"
 
 class Player
 {
@@ -20,5 +19,4 @@ public:
 private:
 	uint32_t m_SceneWidth = 0, m_SceneHeight = 0;
 	Scene m_Scene;
-	Minigame m_Minigame;
 };

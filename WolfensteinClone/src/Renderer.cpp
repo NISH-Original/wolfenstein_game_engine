@@ -52,22 +52,21 @@ void Renderer::OnResize(uint32_t width, uint32_t height, uint32_t mapWidth, uint
 
 void Renderer::Render(const Scene& scene, Player& player)
 {
+	// render the scene
 	for (uint32_t x = 0; x < m_FinalImage->GetWidth(); x++)
 	{
 		float fov = player.m_Fov * (PI / 180);
 		float rayAngle = (player.m_Angle + (fov / 2.0f)) - ((float)x / (float)m_FinalImage->GetWidth()) * fov;
-		// rayAngle *= ((float)m_FinalImage->GetWidth() / m_FinalImage->GetHeight());
 		float rayDist = 0.0f;
-		float coinDist = 0.0f;
 
 		glm::vec2 unitVector = { (float)sinf(rayAngle), (float)cosf(rayAngle) };
 
 		bool hitWall = false;
-		bool hitCoin = false;
 		while (!hitWall && rayDist < player.m_MaxViewDist)
 		{
 			rayDist += 0.1f;
 
+			// send a ray to wall from player
 			glm::vec2 test = {
 				(int)(player.m_Position.x + unitVector.x * rayDist),
 				(int)(player.m_Position.y + unitVector.y * rayDist)
@@ -83,14 +82,12 @@ void Renderer::Render(const Scene& scene, Player& player)
 			{
 				if (scene.map[(int)(test.x + scene.mapWidth * test.y)] != 0)
 				{
-					if (scene.map[(int)(test.x + scene.mapWidth * test.y)] == 2)
-						hitCoin = true;
-
 					hitWall = true;
 				}
 			}
 		}
 
+		// calculate the size of the vertical wall to render based on length of the raycast
 		int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)rayDist), 0.0f);
 		int floor = m_FinalImage->GetHeight() - ceiling;
 
@@ -100,7 +97,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.skyColour);
 			else if (y > ceiling && y <= floor)
 			{
-				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(hitCoin ? scene.coinColour : scene.wallColour * (1.0f - (rayDist / player.m_MaxViewDist)));
+				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.wallColour * (1.0f - (rayDist / player.m_MaxViewDist)));
 			}
 			else
 			{
@@ -110,6 +107,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 		}
 	}
 
+	// populate buffer with pixel data
 	m_FinalImage->SetData(m_ImageData);
 
 	int blockWidth = m_FinalMapImage->GetWidth() / scene.mapWidth;
@@ -117,15 +115,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 	int sceneX = 0;
 	int sceneY = 0;
 
-#if 0
-	for (uint32_t x = 0; x < m_FinalMapImage->GetWidth(); x++)
-	{
-		for (uint32_t y = 0; y < m_FinalMapImage->GetHeight(); y++)
-		{
-			m_MapImageData[x + y * m_FinalMapImage->GetWidth()] = 0xffffffff;
-		}
-	}
-#else
+	// render the minimap
 	for (int x = 0; x < scene.mapWidth; x++)
 	{
 		for (int y = 0; y < scene.mapHeight; y++)
@@ -145,6 +135,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 		}
 	}
 
+	// render player on minimap
 	int playerX = player.m_Position.x;
 	int playerY = player.m_Position.y;
 
@@ -161,8 +152,8 @@ void Renderer::Render(const Scene& scene, Player& player)
 				));
 		}
 	}
-#endif
 
+	// populate buffer with pixel data
 	m_FinalMapImage->SetData(m_MapImageData);
 }
 

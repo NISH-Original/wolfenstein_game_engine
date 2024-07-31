@@ -15,12 +15,6 @@ void Player::OnUpdate(float ts)
 		{
 			m_Position -= forwardDir * m_WalkSpeed * ts;
 		}
-
-		if (m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] == 2)
-		{
-			m_Scene.map[(int)m_Position.y * m_Scene.mapWidth + (int)m_Position.x] = 0;
-			m_Minigame.PlaceCoin();
-		}
 	}
 	else if (Input::IsKeyDown(KeyCode::S))
 	{
