@@ -10,4 +10,4 @@ This is a basic 3D game engine inpired by the original 'Wolfenstein 3D' game. It
 - Mini-map: A mini-map to better help with navigation.
 
 ### Note:
-- The actual project scripts are stored in `WolfensteinClone/src`.
+- The actual project scripts are stored in `WolfensteinClone/src`, not `scripts`.
