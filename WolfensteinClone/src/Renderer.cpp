@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
+#include <execution>
 using namespace std;
 
 #define PI 3.1415926f
@@ -34,12 +35,20 @@ void Renderer::OnResize(uint32_t width, uint32_t height, uint32_t mapWidth, uint
 	delete[] m_ImageData;
 	m_ImageData = new uint32_t[width * height];
 
+	m_ImageHorizontalIter.resize(width);
+	m_ImageVerticalIter.resize(height);
+
+	for (uint32_t i = 0; i < width; i++)
+		m_ImageHorizontalIter[i] = i;
+	for (uint32_t i = 0; i < height; i++)
+		m_ImageVerticalIter[i] = i;
+
 	if (m_FinalMapImage)
 	{
 		if (m_FinalMapImage->GetWidth() == mapWidth && m_FinalImage->GetHeight() == mapHeight)
 			return;
 
-		m_FinalImage->Resize(mapWidth, mapHeight);
+		m_FinalMapImage->Resize(mapWidth, mapHeight);
 	}
 	else
 	{
@@ -53,68 +62,91 @@ void Renderer::OnResize(uint32_t width, uint32_t height, uint32_t mapWidth, uint
 void Renderer::Render(const Scene& scene, Player& player)
 {
 	// render the scene
-	for (uint32_t x = 0; x < m_FinalImage->GetWidth(); x++)
-	{
-		float fov = player.m_Fov * (PI / 180);
-		float rayAngle = (player.m_Angle + (fov / 2.0f)) - ((float)x / (float)m_FinalImage->GetWidth()) * fov;
-		float rayDist = 0.0f;
-
-		glm::vec2 unitVector = { (float)sinf(rayAngle), (float)cosf(rayAngle) };
-
-		bool hitWall = false;
-		while (!hitWall && rayDist < player.m_MaxViewDist)
+	std::for_each(std::execution::par, m_ImageHorizontalIter.begin(), m_ImageHorizontalIter.end(),
+		[this, player, scene](uint32_t x)
 		{
-			rayDist += 0.1f;
+			float fov = player.m_Fov * (PI / 180);
+			float rayAngle = (player.m_Angle + (fov / 2.0f)) - ((float)x / (float)m_FinalImage->GetWidth()) * fov;
+			float rayDist = 0.0f;
 
-			// send a ray to wall from player
-			glm::vec2 test = {
-				(int)(player.m_Position.x + unitVector.x * rayDist),
-				(int)(player.m_Position.y + unitVector.y * rayDist)
-			};
+			glm::vec2 unitVector = { (float)sinf(rayAngle), (float)cosf(rayAngle) };
 
-			// if ray out of bounds
-			if (test.x < 0 || test.x >= scene.mapWidth || test.y < 0 || test.y >= scene.mapHeight)
+			bool hitWall = false;
+			while (!hitWall && rayDist < player.m_MaxViewDist)
 			{
-				hitWall = true;
-				rayDist = player.m_MaxViewDist;
-			}
-			else
-			{
-				if (scene.map[(int)(test.x + scene.mapWidth * test.y)] != 0)
+				rayDist += 0.1f;
+
+				// send a ray to wall from player
+				glm::vec2 test = {
+					(int)(player.m_Position.x + unitVector.x * rayDist),
+					(int)(player.m_Position.y + unitVector.y * rayDist)
+				};
+
+				// if ray out of bounds
+				if (test.x < 0 || test.x >= scene.mapWidth || test.y < 0 || test.y >= scene.mapHeight)
 				{
 					hitWall = true;
+					rayDist = player.m_MaxViewDist;
+				}
+				else
+				{
+					if (scene.map[(int)(test.x + scene.mapWidth * test.y)] != 0)
+					{
+						hitWall = true;
+					}
 				}
 			}
-		}
 
-		// calculate the size of the vertical wall to render based on length of the raycast
-		int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)rayDist), 0.0f);
-		int floor = m_FinalImage->GetHeight() - ceiling;
+			// calculate the size of the vertical wall to render based on length of the raycast
+			int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)rayDist), 0.0f);
+			int floor = m_FinalImage->GetHeight() - ceiling;
 
-		for (uint32_t y = 0; y < m_FinalImage->GetHeight(); y++)
-		{
-			if (y <= ceiling)
-				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.skyColour);
-			else if (y > ceiling && y <= floor)
-			{
-				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.wallColour * (1.0f - (rayDist / player.m_MaxViewDist)));
-			}
-			else
-			{
-				float floorDist = (((float)y - m_FinalImage->GetHeight() / 2.0f) / ((float)m_FinalImage->GetHeight() / 2.0f));
-				m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.floorColour * floorDist);
-			}
-		}
-	}
+			std::for_each(std::execution::par, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
+				[this, ceiling, floor, scene, player, rayDist, x](uint32_t y)
+				{
+					if (y <= ceiling)
+						m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.skyColour);
+					else if (y > ceiling && y <= floor)
+					{
+						m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.wallColour * (1.0f - (rayDist / player.m_MaxViewDist)));
+					}
+					else
+					{
+						float floorDist = (((float)y - m_FinalImage->GetHeight() / 2.0f) / ((float)m_FinalImage->GetHeight() / 2.0f));
+						m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(scene.floorColour * floorDist);
+					}
+				});
+		});
 
 	// populate buffer with pixel data
 	m_FinalImage->SetData(m_ImageData);
 
-	int blockWidth = m_FinalMapImage->GetWidth() / scene.mapWidth;
-	int blockHeight = m_FinalMapImage->GetHeight() / scene.mapHeight;
+	uint32_t blockWidth = m_FinalMapImage->GetWidth() / scene.mapWidth;
+	uint32_t blockHeight = m_FinalMapImage->GetHeight() / scene.mapHeight;
 	int sceneX = 0;
 	int sceneY = 0;
 
+#if 0	
+	for (uint32_t x = 0; x < m_FinalMapImage->GetWidth(); x += blockWidth)
+	{
+		for (uint32_t y = 0; y < m_FinalMapImage->GetHeight(); y += blockHeight)
+		{
+			glm::vec4 shade = scene.map[sceneX + sceneY * scene.mapWidth] == 1 ? scene.wallColour : scene.floorColour;
+
+			for (uint32_t i = x; i < x + blockWidth; i++)
+			{
+				for (uint32_t j = y; j < y + blockHeight; j++)
+				{
+					m_MapImageData[i + j * m_FinalMapImage->GetWidth()] = Utils::ConvertToRGBA(shade);
+				}
+			}
+
+			sceneY++;
+		}
+
+		sceneX++;
+	}
+#else
 	// render the minimap
 	for (int x = 0; x < scene.mapWidth; x++)
 	{
@@ -134,6 +166,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 			}
 		}
 	}
+#endif
 
 	// render player on minimap
 	int playerX = player.m_Position.x;

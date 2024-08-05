@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "Scene.h"
 #include "Player.h"
+#include <vector>
 
 class Renderer
 {
@@ -21,6 +22,7 @@ public:
 private:
 	std::shared_ptr<Walnut::Image> m_FinalImage;
 	std::shared_ptr<Walnut::Image> m_FinalMapImage;
+	std::vector<uint32_t> m_ImageHorizontalIter, m_ImageVerticalIter;
 	uint32_t* m_ImageData = nullptr;
 	uint32_t* m_MapImageData = nullptr;
 };

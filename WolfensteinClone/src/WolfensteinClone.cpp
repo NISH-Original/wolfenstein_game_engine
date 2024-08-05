@@ -29,7 +29,7 @@ public:
 	virtual void OnUIRender() override
 	{
 		// HUD elements
-		ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+		ImGui::Begin("Settings");
 		if (ImGui::Button("START")) m_CanRender = true;
 
 		ImGui::Separator();
@@ -47,10 +47,17 @@ public:
 		ImGui::DragFloat("Walk Speed", &m_Player.m_WalkSpeed, 0.1f, 0.1f, 10.0f);
 		ImGui::DragFloat("Turn Speed", &m_Player.m_TurnSpeed, 0.1f, 0.1f, 5.0f);
 		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
+
+		ImGui::Separator();
+
+		ImGui::Text("Controls:");
+		ImGui::Text("Movement - W A S D");
+		ImGui::Text("Look around - Left and right arrow keys");
+
 		ImGui::End();
 
 		// minimap
-		ImGui::Begin("Minimap", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+		ImGui::Begin("Minimap");
 		
 		m_MapWidth = ImGui::GetContentRegionAvail().x;
 		m_MapHeight = ImGui::GetContentRegionAvail().y;
@@ -61,7 +68,7 @@ public:
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+		ImGui::Begin("Scene");
 		 
 		m_SceneWidth = ImGui::GetContentRegionAvail().x;
 		m_SceneHeight = ImGui::GetContentRegionAvail().y;
