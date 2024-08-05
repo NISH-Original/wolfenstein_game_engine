@@ -9,6 +9,15 @@ This is a basic 3D game engine built from the ground up, inpired by the original
 - Scene and Player Customization: Ability to change colours of the various elements in the scene along with customizing player speed.
 - Mini-map: A mini-map to better help with navigation.
 
+## Usage
+To try the game for yourself
+- Navigate to the 'Releases' section.
+- Download the `WolfensteinCloneV2.zip` folder.
+- Unzip the entire folder into a preferred directory.
+- Run the `WolfensteinClone.exe` executable.
+- If Windows tries to block the application, press 'More Info' and then 'Run Anyway'.
+- Press 'START' on the top right of the window to start the game.
+
 ## Screenshots
 ![game_showcase](https://github.com/user-attachments/assets/67910898-2c38-4fec-8f29-53f6858d17df)
 
