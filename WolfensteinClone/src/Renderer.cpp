@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <iostream>
 #include <execution>
+
 using namespace std;
 
 #define PI 3.1415926f
@@ -98,7 +99,8 @@ void Renderer::Render(const Scene& scene, Player& player)
 			}
 
 			// calculate the size of the vertical wall to render based on length of the raycast
-			int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)rayDist), 0.0f);
+			float lensCorrectedRaycast = (float)rayDist * cosf(rayAngle - player.m_Angle);
+			int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)lensCorrectedRaycast), 0.0f);
 			int floor = m_FinalImage->GetHeight() - ceiling;
 
 			std::for_each(std::execution::par, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
