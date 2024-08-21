@@ -12,7 +12,7 @@ This is a basic 3D game engine built from the ground up, inpired by the original
 ## Usage
 To try the game for yourself
 - Navigate to the 'Releases' section.
-- Download the `WolfensteinCloneV2.zip` folder.
+- Download the `WolfensteinClone.zip` folder.
 - Unzip the entire folder into a preferred directory.
 - Run the `WolfensteinClone.exe` executable.
 - If Windows tries to block the application, press 'More Info' and then 'Run Anyway'.
