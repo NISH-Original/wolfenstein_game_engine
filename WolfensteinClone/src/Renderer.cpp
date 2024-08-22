@@ -67,6 +67,8 @@ void Renderer::Render(const Scene& scene, Player& player)
 		[this, player, scene](uint32_t x)
 		{
 			float fov = player.m_Fov * (PI / 180);
+			float DV = (m_FinalImage->GetHeight() / 2) / tanf(fov / 2.0f);
+			// float rayAngle = player.m_Angle + atanf(x / DV);
 			float rayAngle = (player.m_Angle + (fov / 2.0f)) - ((float)x / (float)m_FinalImage->GetWidth()) * fov;
 			float rayDist = 0.0f;
 
@@ -100,7 +102,7 @@ void Renderer::Render(const Scene& scene, Player& player)
 
 			// calculate the size of the vertical wall to render based on length of the raycast
 			float lensCorrectedRaycast = (float)rayDist * cosf(rayAngle - player.m_Angle);
-			int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - m_FinalImage->GetHeight() / ((float)lensCorrectedRaycast), 0.0f);
+			int ceiling = max((float)(m_FinalImage->GetHeight() / 2.0) - DV / ((float)lensCorrectedRaycast), 0.0f);
 			int floor = m_FinalImage->GetHeight() - ceiling;
 
 			std::for_each(std::execution::par, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),

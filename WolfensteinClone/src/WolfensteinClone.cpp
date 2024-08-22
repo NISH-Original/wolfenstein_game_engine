@@ -46,7 +46,7 @@ public:
 
 		ImGui::DragFloat("Walk Speed", &m_Player.m_WalkSpeed, 0.1f, 0.1f, 10.0f);
 		ImGui::DragFloat("Turn Speed", &m_Player.m_TurnSpeed, 0.1f, 0.1f, 5.0f);
-		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 80);
+		ImGui::DragInt("FOV", &m_Player.m_Fov, 1.0f, 30, 120);
 
 		ImGui::Separator();
 
